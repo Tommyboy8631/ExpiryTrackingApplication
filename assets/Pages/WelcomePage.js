@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Alert, Dimensions, Pressable, ImageBackground } from 'react-native';
 import AppButton from '../components/AppButton';
+import routes from '../navigation/routes';
 
-function WelcomePage(props) {
+function WelcomePage({ navigation }) {
 
 
-    const handleOnPressLogin = () => console.log("Tapped")
-    const handleOnPressRegistor = () => console.log("Tapped")
+    const handleOnPressLogin = () => navigation.navigate(routes.LOGIN_PAGE)
+    const handleOnPressRegistor = () => Alert.alert("Registration is not yet availiable")
     const backgroundImage = require("./loginBackground.png");
 
   return (

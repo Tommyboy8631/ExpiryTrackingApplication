@@ -5,21 +5,29 @@ import AppButton from '../components/AppButton'
 import { Formik } from "formik"
 import * as Yup from "yup"
 import ErrorMessage from '../components/ErrorMessage'
+import routes from '../navigation/routes'
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required(),
     password: Yup.string().required().min(4)
 })
 
-const LoginPage = () => {
-    const handleSubmit = () => console.log("loging in with" + username.toString() + password)
- 
+const LoginPage = ({ navigation }) => {
+    const handleSubmit = () => {
+        console.log("logging in with" + values.username.toString() + " " + values.password)
+
+
+        // aurth lines and backend
+  
+    }
+
+
   return(
     <SafeAreaView style={styles.container}>
         <Formik
         initialValues={{username: "", password: ""}}
-        onSubmit={values => console.log(values)}
-        validationSchema={validationSchema}
+        onSubmit={() => navigation.navigate(routes.LIST_PAGE)}
+        validationSchema={() => validationSchema}
         >
             {({handleChange, handleSubmit, errors, setFieldTouched, touched}) => 
                 <>

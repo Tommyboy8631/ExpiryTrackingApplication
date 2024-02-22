@@ -3,38 +3,39 @@ import Icon from './Icon'
 import React, {useState} from 'react';
 import PickerItem from './PickerItem';
 import AppButton from './AppButton';
+import DatePicker from 'react-native-modern-datepicker';
 
-const AppPicker = ({icon, items, onSelectItem, selectedItem,  placeholder, backgroundColor, iconColor}) => {
 
-    const [modalVisible, setmodalVisible] = useState(false)
-    const handleOnItemPress = () => console.log("Pressed")
+const AppDatePicker = ({icon, items, onSelectItem, selectedItem,  placeholder, backgroundColor, iconColor}) => {
+
+    const [show, setShow] = useState(false)
+    const [date, setDate] = useState("")
+    const handleOnItemPress = (event) => console.log(event)
 
   return (
         <React.Fragment>
-            <TouchableOpacity onPress={() => setmodalVisible(true)}>
+            <TouchableOpacity onPress={() => setShow(true)}>
                 <SafeAreaView style={styles.container}>
                     {icon && <Icon style={styles.icon} name={icon} size={25} backgroundColor={backgroundColor} iconColor={iconColor}/>}
                     <Text style={styles.textInput}>{selectedItem ? selectedItem : placeholder}</Text>
-                    <Icon style={styles.icon} name="chevron-down" size={25} backgroundColor={backgroundColor} iconColor={iconColor}/>
+                    <Icon style={styles.icon} name="update" size={25} backgroundColor={backgroundColor} iconColor={iconColor}/>
                 </SafeAreaView>
             </TouchableOpacity>
-            <Modal visible={modalVisible} animationType='slide'>
-                <AppButton title="Close" style={{backgroundColor: "grey"}} onPress={() => setmodalVisible(false)}></AppButton>
-                <FlatList 
-                    data={items}
-                    keyExtractor={item => item.id.toString()}
-                    renderItem={({item}) => <PickerItem label={item.label} onPress={() => {
-                        setmodalVisible(false);
-                        onSelectItem(item.label);
-                    }}></PickerItem>}
-                />
+            <Modal visible={show}>
+            <AppButton title="Close" style={{backgroundColor: "grey"}} onPress={() => setShow(false)}></AppButton>
+            <DatePicker
+               format={"DD/MM/YYYY"}
+               onDateChange={date => onSelectItem(date)}
+               selected={selectedItem}
+               mode='datepicker'
+               />
             </Modal>
         </React.Fragment>
 
   )
 }
 
-export default AppPicker
+export default AppDatePicker
 
 const styles = StyleSheet.create({
     container: {
@@ -43,11 +44,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(222, 222, 222, 0.20)',
         borderRadius: 10,
         flexDirection: "row",
-        padding: 5,
+        padding: 10,
         justifyContent: "center",
         alignItems: "center",
         margin: 10,
-
+    
     },
     icon: {
         flex: 1,

@@ -7,14 +7,24 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 function AppCard({title, subtitle, expiry, onLongPress, renderRightActions}) {
 
+  const imageMappings = {
+    Carbohydrates: require('./assets/Carbohydrates.png'),
+    Etc: require('./assets/Etc.png'),
+    Fruit: require('./assets/Fruit.png'),
+    Meat: require('./assets/Meat.png'),
+    Vegetables: require('./assets/Vegitables.png')
+  };
+
+  const imageSource = imageMappings[subtitle] || require('./assets/defaultImage.png');
+
 
   return (
         <GestureHandlerRootView>
           <Swipeable renderRightActions={renderRightActions}>
             <TouchableOpacity style={[styles.card, styles.shadowProp]} onLongPress={onLongPress}>
-              <Image source={require("./assets/apple.png")} style={styles.image} resizeMode='contain'></Image>
+              <Image source={imageSource} style={styles.image} resizeMode='contain'></Image>
               <View style={styles.view}>
-                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.title} numberOfLines={1}>{title}</Text>
                 <Text style={styles.subtitle}>{subtitle}</Text>
               </View>
               <View style={[styles.view2, {flexGrow: 1}]}>

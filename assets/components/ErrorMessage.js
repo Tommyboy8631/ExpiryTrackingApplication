@@ -5,10 +5,14 @@ const ErrorMessage = ({error}) => {
   if (!error) return null;
 
   return (
-    <Text>{error}</Text>
+    <Text style={styles.text}>{error}</Text>
   )
 }
 
 export default ErrorMessage
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  text:{
+    alignSelf: "center"
+  }
+})

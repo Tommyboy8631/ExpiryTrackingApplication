@@ -8,30 +8,20 @@ import Screen from './assets/Pages/Screen';
 import AppPicker from './assets/components/AppPicker';
 import React, {useState} from 'react';
 import LoginPage from './assets/Pages/LoginPage';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import AuthNavigator from './assets/navigation/AuthNavigator';
+
 
 
 export default function App() {
   
 
-  const items = [
-    {
-      id: 1,
-      label: "Fruit"
-    },
-    {
-      id: 2,
-      label: "Meat"
-    },
-    {
-      id: 3,
-      label: "Vegitables"
-    },
-]
-
   return (
-      <LoginPage>
+      <NavigationContainer style={styles.container}>
+        <AuthNavigator />
         
-      </LoginPage>
+      </NavigationContainer>
   );
 }
 

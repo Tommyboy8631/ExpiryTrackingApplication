@@ -17,18 +17,19 @@ const styles = StyleSheet.create({
       margin: 10,
       borderBlockColor: "white",
       borderRadius: 10,
-      backgroundColor: 'rgba(52, 52, 52, 0.8)',
+      backgroundColor: "rgba(52, 52, 52, 0.8)",
       width: "80%",
       height: 50,
       bottom: 1,
-      marginBottom: 16
+      marginBottom: 16,
+      alignSelf: "center"
     },
     buttonText: {
         fontSize: 16,
         lineHeight: 21,
         fontWeight: 'bold',
         letterSpacing: 0.25,
-        color: 'white',
+        color: "white",
       }
 })
 
