@@ -2,7 +2,6 @@ import { View, Text, FlatList, SafeAreaView, StyleSheet, TouchableOpacity, Modal
 import React, {useState} from 'react';
 import AppCard from '../components/AppCard';
 import Constants from "expo-constants";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import ListItemDeleteAction from '../components/ListItemDeleteAction';
 import AppDatePicker from '../components/AppDatePicker';
 import Icon from '../components/Icon';
@@ -14,7 +13,13 @@ import * as Yup from "yup"
 import ErrorMessage from '../components/ErrorMessage';
 import itemAPI from "../api/getItems"
 import removeItemAPI from "../api/removeItem"
+import createItemApi from "../api/createItem"
 import { useEffect } from 'react';
+import { ActivityIndicator } from 'react-native';
+import useApi from '../hooks/useApi';
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
+import { Alert } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 const validationSchema = Yup.object().shape({
     food: Yup.string().required().label("Name").max(12).min(3),
@@ -22,18 +27,23 @@ const validationSchema = Yup.object().shape({
     expiry: Yup.string().required()
 });
 
-function ListPage() {
 
-    const [listings, setListings] = useState([]);
+function ListPage() {
+    const route = useRoute()
+    const [UserID, setUserId] = useState(route.params.userID); 
+
+    const [sendRequest, setSendRequest] = useState(1);
+
+    //Handling getting items to display on screen
+    const getItemsApi = useApi(itemAPI.getItems)
+    const getRemoveItemApi = useApi(removeItemAPI.removeItem)
+    const getCreateItemApi = useApi(createItemApi.createItem)
+    
 
     useEffect(() => {
-        LoadItems();
-    }, [])
-
-    const LoadItems = async () => {
-        const response = await itemAPI.getItems(1)
-        setListings(response.data)
-    }
+        getItemsApi.request(UserID);
+        console.log("Sending request for Items to server ... Request Number " + sendRequest + " user ID number " + UserID)
+    }, [sendRequest])
     
 
     const TempCatagories = [
@@ -44,33 +54,22 @@ function ListPage() {
         {label: "Etc", id: 5},
     ]
 
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshing, setRefreshing] = useState(false)
     const [addPageActive, setAddPageActive] = useState(false);
     
-    const handleOnSwipe = item => {
 
-        //still not working need to look over ....
-        useEffect(() => {
-            LoadRemoveItems();
-        }, [])
-    
-        const LoadRemoveItems = async () => {
-            const response = await removeItemAPI.removeItem(item.ID)
-            if (response.problem){
-                console.log("There is a porblem with removeing item " + response.problem)
-            }
-        }
-
+    const handleRemoveItem = item => {
+        getRemoveItemApi.request(item.ID)
+        console.log("item " + item.ID + " has being removed")
+        setSendRequest(sendRequest + 1)
         
-        const newItems = listings.filter(i => i.ID !== item.ID)
-        setListings(newItems);
-
-    
-
     }
 
-    const handleOnPress = () => {
-        console.log("Pressed");
+    const handleCreateItem = (values) => {
+        getCreateItemApi.request(UserID, values.food, values.category, values.expiry)
+        setAddPageActive(false)
+        setSendRequest(sendRequest + 1)
+        //temp put close modal here
     }
 
     const handleOnSave = (values) => {
@@ -86,17 +85,18 @@ function ListPage() {
             <TouchableOpacity style={styles.plusButton} onPress={() => setAddPageActive(true)}>
                 <Icon name="plus" iconColor='black' backgroundColor='white' size={50}></Icon>
             </TouchableOpacity>
-            <FlatList data={listings}
+        
+            <FlatList data={getItemsApi.data}
             keyExtractor={item => item.ID}
             renderItem={({item}) => <AppCard title={item.Name} subtitle={item.Subtitle} expiry={item.Expiry}
-                onLongPress={handleOnPress}
-                renderRightActions={() => <ListItemDeleteAction onPress={() => handleOnSwipe(item)}></ListItemDeleteAction>}/>}
+                renderRightActions={() => <ListItemDeleteAction onPress={() => handleRemoveItem(item)}></ListItemDeleteAction>}/>}
             refreshing={refreshing}
             onRefresh={() => {
-                
-                //soon push to function
+                setSendRequest(sendRequest + 1)
             }}>
             </FlatList>
+
+            <ActivityIndicator animating={getItemsApi.loading} hidesWhenStopped={true}/>
         
         </SafeAreaView>
         <Modal visible={addPageActive} animationType='slide'>
@@ -106,7 +106,7 @@ function ListPage() {
 
                 <Formik
                 initialValues={{food: "", category: "", expiry: ""}}
-                onSubmit={values => setItems((items) => [...items, {id: items.size+1, title: values.food, subtitle: values.category, expiry: values.expiry}])}
+                onSubmit={values => handleCreateItem(values)}
                 validationSchema={validationSchema}
                 >
                     {({handleChange, handleSubmit, values, errors, setFieldTouched, touched}) => <>

@@ -1,0 +1,14 @@
+const get = apiClient.get;
+apiClient.get = async (url, params, axiosConfig) => {
+
+    const reponse = await get (url, params, axiosConfig);
+    if(reponse.ok){
+        cache.store(url, reponse.data)
+        console.log("items stored in cache ")
+        return reponse;
+    }
+
+    const data = await cache.get(url)
+    console.log("using cache items")
+    return data ? { ok: true, data } : reponse;
+}

@@ -11,7 +11,7 @@ const Icon = ({name, size = 30, backgroundColor = "black", iconColor = "white"})
         backgroundColor: backgroundColor,
         justifyContent: "center",
         alignItems: "center",
-        margin: 5,
+        margin: 6,
 
      }}>
         <MaterialCommunityIcons name={name} size={size * 0.55} color={iconColor}/>

@@ -1,7 +1,10 @@
 import { apiClient } from "./client"
 
-const getUser = (id) => apiClient.get("/users/" + id)
+const checkUser = (Username, Password) => apiClient.post("/checkUser", {
+    username: Username,
+    password: Password
+} )
 
 export default {
-    getUser,
+    checkUser,
 }
