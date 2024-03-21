@@ -12,36 +12,25 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import NetInfo, {useNetInfo} from '@react-native-community/netinfo';
 import cache from "./utility/cache";
+import useApi from './assets/hooks/useApi';
+import updateToken from './assets/api/updateToken';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from "expo-permissions";
+import * as Permissions from 'expo-permissions';
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  const projectId = Constants.expoConfig.extra.eas.projectId;
+  const [notificationPermission, setNotificationPermission] = useState(null);
 
   const [userId, setUserId] = useState(null);
 
+  const updateTokenApi = useApi(updateToken.updateToken)
+
   useEffect(() => {
     checkUserLoggedIn();
-    registerForPushNotifications();
   }, []); 
 
-
-
-  const registerForPushNotifications = async () =>{
-    console.log("Running registor for Push Notifications ....")
-    console.log(Permissions)
-    try {
-      const permission = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      if (!permission.granted) return;
-
-        console.log("Permission granted")
-        const token = await Notifications.getExpoPushTokenAsync();
-        console.log(token)
-    } catch (error) {
-      console.error("Error " + error)
-    }
-  }
  
   
   const checkUserLoggedIn = async () => {

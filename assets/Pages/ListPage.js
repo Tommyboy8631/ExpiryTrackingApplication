@@ -20,6 +20,9 @@ import useApi from '../hooks/useApi';
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import updateToken from '../api/updateToken';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 
 const validationSchema = Yup.object().shape({
     food: Yup.string().required().label("Name").max(12).min(3),
@@ -29,6 +32,7 @@ const validationSchema = Yup.object().shape({
 
 
 function ListPage() {
+    const projectId = Constants.expoConfig.extra.eas.projectId;
     const route = useRoute()
     const [UserID, setUserId] = useState(route.params.userID); 
 
@@ -38,11 +42,16 @@ function ListPage() {
     const getItemsApi = useApi(itemAPI.getItems)
     const getRemoveItemApi = useApi(removeItemAPI.removeItem)
     const getCreateItemApi = useApi(createItemApi.createItem)
+    const updateTokenApi = useApi(updateToken.updateToken)
     
+    useEffect(() => {
+        RegistorNotifications();
+    }, [])
 
     useEffect(() => {
         getItemsApi.request(UserID);
         console.log("Sending request for Items to server ... Request Number " + sendRequest + " user ID number " + UserID)
+
     }, [sendRequest])
     
 
@@ -57,6 +66,25 @@ function ListPage() {
     const [refreshing, setRefreshing] = useState(false)
     const [addPageActive, setAddPageActive] = useState(false);
     
+    const RegistorNotifications = async () =>{
+    
+        try {
+          const { status } = await Notifications.requestPermissionsAsync();
+          if( status != "granted") return;
+          const token = await Notifications.getExpoPushTokenAsync(projectId)
+          console.log(token)
+          try {
+            console.log("Updating the users token on the database ")
+            updateTokenApi.request(UserID, token.data)
+          } catch (error) {
+            console.error("Error when updating notification token on the database + " + error)
+            return
+          }
+        }catch(error){
+          console.error("Error getting a push token "+ error)
+        }
+        return token
+      }
 
     const handleRemoveItem = item => {
         getRemoveItemApi.request(item.ID)
@@ -78,7 +106,6 @@ function ListPage() {
     }
 
 
-
   return (
     <React.Fragment>
         <SafeAreaView style={styles.view}>
@@ -86,8 +113,8 @@ function ListPage() {
                 <Icon name="plus" iconColor='black' backgroundColor='white' size={50}></Icon>
             </TouchableOpacity>
         
-            <FlatList data={getItemsApi.data}
-            keyExtractor={item => item.ID}
+            <FlatList data={getItemsApi.data.slice().sort((a, b) => a.Expiry.localeCompare(b.Expiry))}
+            keyExtractor={item => item.ID.toString()}
             renderItem={({item}) => <AppCard title={item.Name} subtitle={item.Subtitle} expiry={item.Expiry}
                 renderRightActions={() => <ListItemDeleteAction onPress={() => handleRemoveItem(item)}></ListItemDeleteAction>}/>}
             refreshing={refreshing}

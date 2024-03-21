@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 export default useApi = (apiFunction) => {
@@ -11,9 +12,10 @@ export default useApi = (apiFunction) => {
         setLoading(false)
 
         if(!response.ok){
-            console.log("there is a porblem with calling the Server " + response.problem)
+            console.log("there is a problem with calling the Server " + response.problem)
             return
         }
+        console.log("Api gained the response from " + apiFunction)
         setData(response.data)
         setSuccess(true)
     }

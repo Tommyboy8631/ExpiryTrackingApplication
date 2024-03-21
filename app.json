@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "ExpiryTracker",
-    "slug": "ExpiryTracker",
-    "version": "1.0.0",
+    "slug": "expirytracker",
+    "version": "50.0.8",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/components/assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.ExpiryTracker"
     },
     "android": {
       "useNextNotificationsApi": true,
@@ -27,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "33a6997f-3df5-4867-970a-db8a71e21c16"
+      }
+    },
+    "owner": "tommyboy8631"
   }
 }
